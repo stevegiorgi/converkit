@@ -26,7 +26,7 @@
               <v-row>
                 <v-col cols="12">
                   <v-combobox
-                    :value="getSubscriberTags(subscriber.ck_id)"
+                    :value="subscriber.tags"
                     :item-text="tag => tag['name']"
                     :return-object="false"
                     label="Tags"
