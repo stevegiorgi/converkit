@@ -1,0 +1,51 @@
+<template>
+    <div class="group__container">
+      {{ groupId }}      
+      <div class="group__list" v-for="item in items" :key="item.id">
+          <div class="group__member" v-if="item.id == groupId">
+              <router-link :to="'/user-group/' + item.id">Click Me</router-link>
+              <MemberDetails :item="groupId" />
+          </div>
+      </div>
+        <!-- <table> -->
+            <!-- <tr v-for="item in items" :key="item.id"> -->
+              <!-- <tr> -->
+              
+                <!-- <td> -->
+                    <!-- {{ item.title.rendered }} -->
+                <!-- </td> -->
+                <!-- <td> -->
+                    <!-- <router-link :to="'/user-group/' + item.id">Click Me</router-link> -->
+                <!-- </td> -->
+            <!-- </tr> -->
+        <!-- </table> -->
+        <!-- {{ (this.items.length > 0 ) ? this.items : '' }} -->
+    </div>
+</template>
+
+<script>
+import { Bus } from '@/frontend/mixins/bus.js'
+import MemberDetails from '@/frontend/components/MemberDetails.vue'
+
+export default {
+    components: {
+      MemberDetails,
+    },
+    props: {
+        items: {
+            type: Array,
+            required: true
+        }
+    },
+    data() {
+      return {
+        groupId: null,
+      }
+    },
+    created() {
+      Bus.$on('selectGroup', selectedGroup => {
+        this.groupId = selectedGroup;
+      });
+    },
+}
+</script>
