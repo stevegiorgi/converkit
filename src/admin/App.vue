@@ -61,9 +61,9 @@ export default {
     ...mapGetters({
       subscribers: "getSubscribers"
     }),
-    ...mapGetters({
-      tags: "getSubscriberTags"
-    }),
+    // ...mapGetters({
+    //   tags: "getSubscriberTags"
+    // }),
     headers() {
       return [
         { text: "ID", value: "id" },
@@ -83,7 +83,7 @@ export default {
   },
   created() {
     this.$store.dispatch("getSubscribers");
-    this.$store.dispatch("getSubscriberTags");
+    // this.$store.dispatch("getSubscriberTags");
   }
 };
 </script>
