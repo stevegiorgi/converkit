@@ -24,6 +24,9 @@ import "./plugins/axios";
 import store from "./store";
 import menuFix from "./utils/admin-menu-fix";
 import vuetify from "./plugins/vuetify";
+
+export const bus = new Vue();
+
 // import VueApexCharts from "vue-apexcharts";
 // import VCalendar from './plugins/v-calendar'
 // import './sass/main.scss'
@@ -46,4 +49,4 @@ new Vue({
 });
 
 // fix the admin menu for the slug "vue-app"
-// menuFix("vue-app");
+menuFix("vue-app");

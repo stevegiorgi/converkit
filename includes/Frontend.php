@@ -29,7 +29,6 @@ class Frontend
 		}
 	}
 
-
 	/**
 	 * Render frontend app
 	 *
@@ -45,9 +44,11 @@ class Frontend
 		wp_enqueue_style('rdashboard-tailwind');
 		wp_enqueue_style('rdashboard-title-font');
 		wp_enqueue_style('rdashboard-base-font');
-		wp_enqueue_style('rdashboard-icons');
+		wp_enqueue_style('rdashboard-icons-md');
+		wp_enqueue_style('rdashboard-icons-mdi');
 		wp_enqueue_script('rdashboard-frontend');
 		wp_enqueue_script('rdashboard-vendor');
+		wp_enqueue_script('rdashboard-title-veutify');
 		// wp_localize_script( 'wp-api', 'wpApiSettings', array(
 		// 	'root'  => esc_url_raw( rest_url() ),
 		// 	'nonce' => wp_create_nonce( 'wp_rest' )
@@ -62,7 +63,7 @@ class Frontend
 		// wp_enqueue_script( 'dashboard-wp-api' );
 		// wp_add_inline_script( 'dashboard-wp-api', $wpApiSettings );
 
-		$content .= '<div id="vue-frontend-app"></div>';
+		$content .= '<div id="vue-frontend-app"><div data-veutify><v-app></v-app></div></div>';
 
 		return $content;
 	}
@@ -85,7 +86,8 @@ class Frontend
 		wp_enqueue_style('rdashboard-tailwind');
 		wp_enqueue_style('rdashboard-title-font');
 		wp_enqueue_style('rdashboard-base-font');
-		wp_enqueue_style('rdashboard-icons');
+		wp_enqueue_style('rdashboard-icons-md');
+		wp_enqueue_style('rdashboard-icons-mdi');
 		wp_enqueue_script('rdashboard-admin');
 		wp_enqueue_script('rdashboard-vendor');
 		// wp_localize_script( 'wp-api', 'wpApiSettings', array(

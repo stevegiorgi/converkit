@@ -1,9 +1,9 @@
 <?php
 /*
-Plugin Name: LearnDash Reporting Dashboard
+Plugin Name: LearnDash Reporting Dashboard / CovertKit Dashboard
 Plugin URI: 
-Description: 
-Version: 1.2
+Description: LearnDash reporting and ConverKit tag maintenance dashboard.
+Version: 1.6
 Author: Steve Giorgi
 Author URI: https://example.com/
 License: GPL2

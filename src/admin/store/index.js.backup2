@@ -1,0 +1,151 @@
+import Vue from "vue";
+import Vuex from "vuex";
+import { getField, updateField } from "vuex-map-fields";
+import moment from "moment";
+
+// import uniqBy from "lodash/uniqBy";
+import _ from "lodash";
+
+let today = new Date();
+let dd = String(today.getDate()).padStart(2, "0");
+let mm = String(today.getMonth() + 1).padStart(2, "0");
+let yyyy = today.getFullYear();
+
+today = yyyy + "-" + mm + "-" + dd;
+
+Vue.use(Vuex);
+
+export default new Vuex.Store({
+    state: {
+        subscribers: [],
+        tags: []
+    },
+    mutations: {
+        updateField,
+        SET_SUBSCRIBERS(state, payload) {
+            state.subscribers = payload;
+        },
+        SET_SUBSCRIBERS_TAGS(state, payload) {
+            state.subscribers_tags = payload;
+        },
+        SET_TAGS(state, payload) {
+            state.tags = payload;
+        }
+    },
+    actions: {
+        // async getSubscribers({ commit }) {
+        //     Vue.axios
+        //         .get("ldd/v2/ck-users?get_all=true")
+        //         .then(response => {
+        //             commit("SET_SUBSCRIBERS", response.data);
+        //         })
+        //         .catch(error => {
+        //             this.error(e.request ? e.request.statusText : e.request);
+        //         });
+        // },
+
+        // async getSubscriberTags({ commit }, { id }) {
+        //     const tags = window.localStorage.getItem(`subscriberTags-${id}`);
+        //     // window.localStorage.removeItem(`subscriberTags-${id}`);
+
+        //     if (tags) {
+        //         return tags;
+        //     } else {
+        //         try {
+        //             this.isLoading = true;
+        //             const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
+        //             const response = await axios.get(
+        //                 `https://api.convertkit.com/v3/subscribers/${id}/tags?api_key=${apiKey}`
+        //             );
+        //             commit("SET_SUBSCRIBER_TAGS", response.data.tags);
+
+        //             // window.localStorage.setItem(`subscriberTags-${id}`, response.data);
+        //         } catch (e) {
+        //             this.error(e.request ? e.request.statusText : e.request);
+        //         } finally {
+        //             this.isLoading = false;
+        //         }
+        //     }
+        // },
+
+        //       async getSubscribers({ commit }) {
+        //           const subscribers = await axios.get("ldd/v2/ck-users?get_all=true").then(response => {
+        //               commit("SET_SUBSCRIBERS", response.data)
+        //           });
+        //           const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
+
+        //           const response = await Promise.all(
+        //               subscribers.map(sub => await axios.get(`https://api.convertkit.com/v3/subscribers/${sub.ck_id}/tags?api_key=${apiKey}`))
+        //           }
+        // }
+
+        async getSubscribers({ commit }) {
+            const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
+            const subscribers = await axios.get("ldd/v2/ck-users?get_all=true");
+
+            let tags = {};
+            for (const [index, subscriber] of subscribers.data.entries()) {
+                axios
+                    .get(
+                        `https://api.convertkit.com/v3/subscribers/${subscriber.ck_id}/tags?api_key=${apiKey}`
+                    )
+                    .then(({ data }) => (tags[subscriber.ck_id] = data));
+            }
+
+            commit("SET_SUBSCRIBERS", subscribers.data);
+            commit("SET_SUBSCRIBERS_TAGS", tags);
+
+            // const tags = await Promise.all(
+            //     subscribers.data.map(async sub => {
+            //         const response = await axios.get(
+            //             `https://api.convertkit.com/v3/subscribers/${sub.ck_id}/tags?api_key=${apiKey}`
+            //         );
+            //         return response.data;
+            //     })
+            // );
+
+            // subscribers.data.forEach((subscriber, index) => {
+            //     data.push(subscriber);
+            //     data.push(tags[index]);
+            // });
+            //
+            //
+
+            //// maps
+            // const subscribers = await axios.get("ldd/v2/ck-users?get_all=true");
+            // const records = new Map();
+
+            // for (const subscriber of subscribers.data) {
+            //     axios
+            //         .get(
+            //             `https://api.convertkit.com/v3/subscribers/${subscriber.ck_id}/tags?api_key=${apiKey}`
+            //         )
+            //         .then(({ data }) => records.set(subscriber, data))
+            //         .catch(error => handleError(error));
+            // }
+
+            // console.log(records);
+
+            // commit("SET_SUBSCRIBERS", data);
+
+            // commit("SET_SUBSCRIBERS", subscribers.data);
+            // commit("SET_SUBSCRIBERS_TAGS", tags);
+        },
+
+        async getTags({ commit }) {
+            const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
+            const response = await axios.get(
+                `https://api.convertkit.com/v3/tags?api_key=${apiKey}`
+            );
+
+            commit("SET_TAGS", response.data.tags);
+        }
+    },
+
+    getters: {
+        getField,
+        getSubscribers: state => state.subscribers,
+        getSubscriberTags: state => state.tags,
+        getTags: state => state.subscribers
+    }
+});

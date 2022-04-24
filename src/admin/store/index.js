@@ -18,6 +18,7 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         subscribers: [],
+        subscribers_tags: [],
         tags: []
     },
     mutations: {
@@ -25,117 +26,54 @@ export default new Vuex.Store({
         SET_SUBSCRIBERS(state, payload) {
             state.subscribers = payload;
         },
-        SET_SUBSCRIBER_TAGS(state, payload) {
+        SET_SUBSCRIBERS_TAGS(state, payload) {
+            state.subscribers_tags = payload;
+        },
+        SET_TAGS(state, payload) {
             state.tags = payload;
         }
-        // async SET_SUBSCRIBER_TAGS(state, payload) {
-        //     state.tags = await payload;
-        // }
     },
     actions: {
         async getSubscribers({ commit }) {
-            Vue.axios
-                .get("ldd/v2/ck-users?get_all=true")
-                .then(response => {
-                    console.log("Subscribers", response.data);
-                    commit("SET_SUBSCRIBERS", response.data);
-                })
-                .catch(error => {
-                    this.error(e.request ? e.request.statusText : e.request);
-                });
+            const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
+            const subscribers = await axios.get("ldd/v2/ck-users?get_all=true");
 
-            // const apiSecret = "1cddU-Wg7MSePN3JYZqa3G4pGs13I9fQfs1aLsEINbg";
-            // Vue.axios
-            //     .get(
-            //         `https://api.convertkit.com/v3/subscribers?api_secret=${apiSecret}&from=2018-01-01&to=2022-02-25`
-            //     )
-            //     .then(response => {
-            //         commit("SET_SUBSCRIBERS", response.data);
-            //     })
-            //     .catch(error => {
-            //         this.error(e.request ? e.request.statusText : e.request);
-            //     });
+            console.log('All Subscriber Data', subscribers);
+
+            // let tags = {};
+            // for (const subscriber of subscribers.data) {
+            //     await axios
+            //         .get(
+            //             `https://api.convertkit.com/v3/subscribers/${subscriber.ck_id}/tags?api_key=${apiKey}`
+            //         )
+            //         .then(({ data }) => (tags[subscriber.ck_id] = data.tags));
+            // }
+
+            // We are adding tag data to each subscriber at our custom endpoint due to API limitations
+            // for (const subscriber of subscribers.data) {
+            //     const response = await axios.get(
+            //         `https://api.convertkit.com/v3/subscribers/${subscriber.ck_id}/tags?api_key=${apiKey}`
+            //     );
+            //     tags[subscriber.ck_id] = response.data.tags;
+            // }
+
+            commit("SET_SUBSCRIBERS", subscribers.data);
+            // commit("SET_SUBSCRIBERS_TAGS", tags);
         },
 
-        // async getSubscriberTags({ commit }, { id }) {
-        //     const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
-        //     Vue.axios
-        //         .get(
-        //             `https://api.convertkit.com/v3/subscribers/${id}/tags?api_key=${apiKey}`
-        //         )
-        //         .then(response => {
-        //             commit("SET_SUBSCRIBER_TAGS", response.data);
-        //         })
-        //         .catch(error => {
-        //             this.error(e.request ? e.request.statusText : e.request);
-        //         });
-        // }
-
-        async getSubscriberTags({ commit }, { id: id }) {
-            // Vue.axios
-            //     .get("/ldd/v2/ck-tags")
-            //     .then(response => {
-            //         console.log("Tags", response.data);
-            //         commit("SET_SUBSCRIBER_TAGS", response.data);
-            //     })
-            //     .catch(e => {
-            //         this.error(e.request ? e.request.statusText : e.request);
-            //     });
-
-            const tags = window.localStorage.getItem(`subscriberTags-${id}`);
-            // window.localStorage.removeItem(`subscriberTags-${id}`);
-            if (tags) {
-                return tags;
-            } else {
-                const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
-                try {
-                    this.isLoading = true;
-                    const response = await axios.get(
-                        `https://api.convertkit.com/v3/subscribers/${id}/tags?api_key=${apiKey}`
-                    );
-                    commit("SET_SUBSCRIBER_TAGS", response.data);
-
-                    // window.localStorage.setItem(`subscriberTags-${id}`, response.data);
-                } catch (error) {
-                    console.log(error);
-                } finally {
-                    this.isLoading = false;
-                }
-            }
+        async getTags({ commit }) {
+            const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
+            const response = await axios.get(
+                `https://api.convertkit.com/v3/tags?api_key=${apiKey}`
+            );
+            commit("SET_TAGS", response.data.tags);
         }
-
-        // async getSubscribers({ commit }) {
-        //     try {
-        //         this.isLoading = true;
-        //         const apiKey = "8xjZlAPwIpU62U7SQjjS-Q";
-        //         const apiSecret = "1cddU-Wg7MSePN3JYZqa3G4pGs13I9fQfs1aLsEINbg";
-        //         const response = axios.get(
-        //             `https://api.convertkit.com/v3/subscribers?api_secret=${apiSecret}&from=2018-01-01&to=2021-10-10`
-        //         );
-        //         commit("SET_SUBSCRIBERS", response);
-        //     } catch (e) {
-        //         this.error(e.request ? e.request.statusText : e.request);
-        //     } finally {
-        //         this.isLoading = false;
-        //     }
-        // }
-
-        // async getMultipleGroupUsers({ commit }) {
-        //     this.state.filters.selectedGroup.forEach(group => {
-        //         Vue.axios
-        //             .get("ldd/v2/group-users/" + group.id)
-        //             .then(response => {
-        //                 commit("SET_MULTIPLE_GROUP_USERS", response.data);
-        //             })
-        //             .catch(error => {
-        //                 throw new Error(`API ${error}`);
-        //             });
-        //     });
-        // }
     },
+
     getters: {
         getField,
         getSubscribers: state => state.subscribers,
-        getSubscriberTags: state => state.tags
+        getSubscribersTags: state => state.subscribers_tags,
+        getTags: state => state.tags
     }
 });

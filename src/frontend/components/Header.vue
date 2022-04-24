@@ -25,7 +25,7 @@
                 <v-switch inset></v-switch>
               </div>
             </template>
-            <span style="color: #000;">Dark Mode On</span>
+            <span style="color: #000">Dark Mode On</span>
           </v-tooltip>
           <v-tooltip v-else bottom>
             <template v-slot:activator="{ on }">
@@ -39,7 +39,7 @@
         <span class="header__small">(Beta v.2.1)</span>
         <span class="header__label theme--light">Reporting for:</span>
         <h1 v-if="selectedGroups.length >= 2" class="header__title">
-          <span>{{ selectedGroups.map(group => group.name).join(", ") }}</span>
+          <span>{{ selectedGroups.map((group) => group.name).join(", ") }}</span>
         </h1>
         <h1 v-else-if="selectedGroups.length === 1" class="header__title">
           <span v-for="group in selectedGroups" :key="group.id">
@@ -59,18 +59,14 @@
             <v-list-item>
               <v-list-item-content>
                 <v-list-item-title
-                  >Group Leaders:
-                  {{ this.multipleGroupLeaders.length }}</v-list-item-title
+                  >Group Leaders: {{ this.multipleGroupLeaders.length }}</v-list-item-title
                 >
               </v-list-item-content>
             </v-list-item>
 
             <v-list-item>
               <v-list-item-content>
-                <v-list-item-title
-                  >Unique Users:
-                  {{ this.uniqueUsers.length }}</v-list-item-title
-                >
+                <v-list-item-title>Unique Users: {{ this.uniqueUsers.length }}</v-list-item-title>
               </v-list-item-content>
             </v-list-item>
           </v-card>
@@ -90,13 +86,13 @@ export default {
   props: {
     items: {
       type: Array,
-      required: true
-    }
+      required: true,
+    },
   },
   methods: {
     darkMode() {
       this.$vuetify.theme.dark = !this.$vuetify.theme.dark;
-    }
+    },
     // async getGroupData(groupId) {
     //   try {
     //     this.isLoading = true;
@@ -112,17 +108,17 @@ export default {
   },
   computed: {
     ...mapGetters({
-      groups: "groups"
+      groups: "groups",
     }),
     ...mapGetters({
-      uniqueUsers: "uniqueUsers"
+      uniqueUsers: "uniqueUsers",
     }),
     ...mapGetters({
-      multipleGroupLeaders: "multipleGroupLeaders"
+      multipleGroupLeaders: "multipleGroupLeaders",
     }),
     ...mapGetters({
-      selectedGroups: "selectedGroups"
-    })
+      selectedGroups: "selectedGroups",
+    }),
   },
   created() {
     // this.getGroupData(this.$store.state.filters.selectedGroup);
@@ -131,7 +127,7 @@ export default {
     //   console.log("Selected Group:", selectedGroup);
     //   this.getGroupData(selectedGroup);
     // });
-  }
+  },
 };
 </script>
 

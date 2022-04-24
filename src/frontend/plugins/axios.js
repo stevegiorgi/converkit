@@ -9,9 +9,9 @@ const token = Buffer.from(`${username}:${password}`, "utf8").toString("base64");
 
 axios.defaults.headers.common["Authorization"] = `Basic ${token}`;
 const _axios = axios.create({
-    baseURL: "https://samesidesellingacademy.com/wp-json/"
-        // baseURL: "http://localhost:10004/wp-json/"
-        // baseURL: "https://sandbox.local/wp-json/"
+    baseURL: "https://samesidesellingacademy.com/wp-json/",
+    // baseURL: "http://localhost:10004/wp-json/"
+    // baseURL: "https://sandbox.local/wp-json/",
 });
 
 _axios.interceptors.request.use(
@@ -44,13 +44,13 @@ Plugin.install = function(Vue) {
         axios: {
             get() {
                 return _axios;
-            }
+            },
         },
         $axios: {
             get() {
                 return _axios;
-            }
-        }
+            },
+        },
     });
 };
 

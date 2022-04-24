@@ -32,6 +32,7 @@ class Assets
 
 		if (is_admin()) {
 			add_action('admin_enqueue_scripts', [$this, 'register'], 5);
+			// add_action('admin_enqueue_scripts', [$this, 'deregister_scripts'], 999);
 		} else {
 			if (is_page('/dashboard/')) {
 				add_action('wp_enqueue_scripts', [$this, 'reset'], 999);
@@ -68,6 +69,15 @@ class Assets
 
 			wp_register_script($handle, $script['src'], $deps, $version, $in_footer);
 		}
+	}
+
+		/**
+     * Deregister scripts
+     *
+     * @return void
+     */
+    public function deregister_scripts() {
+			// wp_deregister_style('wp-admin');
 	}
 
 	/**
@@ -117,7 +127,7 @@ class Assets
 				'deps'      => ['jquery', 'rdashboard-vendor', 'rdashboard-runtime'],
 				'version'   => filemtime(RDASHBOARD_PATH . '/assets/js/admin.js'),
 				'in_footer' => true
-			]
+			],
 		];
 
 		return $scripts;
@@ -130,8 +140,6 @@ class Assets
 	 */
 	public function get_styles()
 	{
-
-
 		$styles = [
 			'rdashboard-style' => [
 				'src' =>  RDASHBOARD_ASSETS . '/css/style.css'
@@ -151,15 +159,19 @@ class Assets
 			'rdashboard-title-font' => [
 				'src' => 'https://fonts.googleapis.com/css2?family=Oswald:wght@200;300;400;500;600;700&display=swap'
 			],
-			'rdashboard-icons' => [
+			'rdashboard-title-veutify' => [
+				'src' => 'https://cdn.jsdelivr.net/npm/vuetify@1.5.24/dist/vuetify.min.css'
+			],
+			'rdashboard-icons-md' => [
 				'src' => 'https://cdn.jsdelivr.net/npm/@mdi/font@4.x/css/materialdesignicons.min.css'
+			],
+			'rdashboard-icons-mdi' => [
+				'src' => 'https://fonts.googleapis.com/css?family=Material+Icons'
 			],
 			'rdashboard-admin' => [
 				'src' =>  RDASHBOARD_ASSETS . '/css/vendors.css'
 			],
-
 		];
-
 		return $styles;
 	}
 
@@ -191,6 +203,7 @@ class Assets
 			created_at date NOT NULL,
 			fields longtext NOT NULL,
 			tags longtext NOT NULL,
+			courses longtext NOT NULL,
 			PRIMARY KEY (id)
 		) $charset_collate;";
 
@@ -200,18 +213,20 @@ class Assets
 
 		// register_activation_hook(__FILE__, 'register_zoom_uuids');
 
-		$uuids = array('0YeOx6VzQNSpSAH+Tv5Y2A==', 'B+S7tOsqQYG1N1Bvk3etTg==', 'Jw6tDjDqThi7CENyZBu1yg==', 'L8b3ntIgS+W83rCEWJEIUQ==', 'LqihmT2oRGOPUoSjRihvIw==', 'ROysgi6lTf+9BkFSMmflBA==', 'b7Ut3eOdS+iBfaxhGtTDAw==', 'dNv94nbzTKSTKZYxGmkvdg==', 'gz8skvcaQ/6tN6jm5ySqqw==', 'ntcAsOw4Qcu8F9f4mKCGSA==', 'r1Uu62UCQ8ijhLxJFMvUPA==',	'u/eKmahFTGeDr63aj/i44g==', 'ylvcLq+MQ9OJcI+zy9/Apw==', 'zl8rJ2onQhWtm6Vj9Pzrmg=='); // Zoom meeting UUIDs
+		// $uuids = array('0YeOx6VzQNSpSAH+Tv5Y2A==', 'B+S7tOsqQYG1N1Bvk3etTg==', 'Jw6tDjDqThi7CENyZBu1yg==', 'L8b3ntIgS+W83rCEWJEIUQ==', 'LqihmT2oRGOPUoSjRihvIw==', 'ROysgi6lTf+9BkFSMmflBA==', 'b7Ut3eOdS+iBfaxhGtTDAw==', 'dNv94nbzTKSTKZYxGmkvdg==', 'gz8skvcaQ/6tN6jm5ySqqw==', 'ntcAsOw4Qcu8F9f4mKCGSA==', 'r1Uu62UCQ8ijhLxJFMvUPA==',	'u/eKmahFTGeDr63aj/i44g==', 'ylvcLq+MQ9OJcI+zy9/Apw==', 'zl8rJ2onQhWtm6Vj9Pzrmg=='); // Zoom meeting UUIDs
+		$uuids = array('AXs6D7JYS32gPi2JgPSscg==', 'B+S7tOsqQYG1N1Bvk3etTg==', 'Jw6tDjDqThi7CENyZBu1yg==', 'KhwSDCAuSDGAxrtMGoGVOw==', 'L8b3ntIgS+W83rCEWJEIUQ==', 'O4qDZoHDTQa83JaL+LM8NQ==', 'dNv94nbzTKSTKZYxGmkvdg==', 'grYf0HNYS+eshJK3Um2OUQ==', 'gz8skvcaQ/6tN6jm5ySqqw==', 'mudo/ocJQZ+sWy6A98PF4g==', 'ntcAsOw4Qcu8F9f4mKCGSA==', 'shjGKxEES7OaH24FLpm09w=='); // Zoom meeting UUIDs
+
 
 		foreach ($uuids as $uuid) {
-			$existing_record = $wpdb->get_results("SELECT * FROM $table_name1 WHERE uuid = '" . $uuid . "'");
-			if (count($existing_record) === 0) {
-				$wpdb->insert(
-					$table_name1,
-					array(
-						'uuid' => $uuid,
-					)
-				);
-			}
+			// $existing_record = $wpdb->get_results("SELECT * FROM $table_name1 WHERE uuid = '" . $uuid . "'");
+			// if (count($existing_record) === 0) {
+			$wpdb->replace(
+				$table_name1,
+				array(
+					'uuid' => $uuid,
+				)
+			);
+			// }
 		}
 
 

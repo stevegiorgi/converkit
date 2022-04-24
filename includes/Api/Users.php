@@ -43,7 +43,7 @@ class Api extends WP_REST_Controller
 		$this->rest_base_activity = 'activity';
 		$this->rest_base_zoom_meetings = 'meetings';
 		$this->rest_base_zoom_users = 'zoom-users';
-		$this->token_header = 'authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6ImVTeUJ1Y0RBUTFTNDE5cGxGaDZOR3ciLCJleHAiOjE2MzE1MzQzMjUsImlhdCI6MTYzMDkyOTUyNX0.6T4saNd2RMhE2C_ROHqEIB4w9_k_Fxm4YXgmMrDDTnI';
+		$this->token_header = 'Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOm51bGwsImlzcyI6ImVTeUJ1Y0RBUTFTNDE5cGxGaDZOR3ciLCJleHAiOjE3MDE0NjA4MDAsImlhdCI6MTY0ODk3MjU1OH0.7Mfm3KreA-Cvd_R9_3AnlIAfLg0Iy0QMwqG_D4vYRwE';
 
 		$this->rest_base_ck_users = 'ck-users';
 		$this->rest_base_ck_tags = 'ck-tags';
@@ -296,6 +296,28 @@ class Api extends WP_REST_Controller
 				// )
 			)
 		);
+
+		register_rest_route(
+			$this->namespace,
+			'/' . $this->rest_base_zoom_meetings . '/zoom-meeting-instances/',
+			array(
+				'callback'            => array($this, 'get_zoom_meeting_instances'),
+				// array(
+				// 	// 'args'   => array(
+				// 	// 	'id' => array(
+				// 	// 		'description' => esc_html__('Zoom Users', 'learndash'),
+				// 	// 		'required'    => true,
+				// 	// 		'type'        => 'integer',
+				// 	// 	),
+				// 	// ),
+				// 	// 'methods'             => 'GET',
+
+				// 	// 'permission_callback' => array($this, 'get_items_permissions_check'),
+				// 	// 'args'                => $this->get_collection_params(),
+				// )
+			)
+		);
+
 
 		register_rest_route(
 			$this->namespace,
@@ -1257,6 +1279,7 @@ class Api extends WP_REST_Controller
 
 			$participants = $this->get_zoom_meeting_participant_details(array('uuid' => $uuid));
 
+
 			foreach ($participants as $participant) {
 				$participantEmail = $participant->user_email;
 				if ($participantEmail == strtolower($email)) {
@@ -1439,112 +1462,6 @@ class Api extends WP_REST_Controller
 	}
 
 
-	/**
-	 * 
-	 * Get ConverKit Tags
-	 * 
-	 */
-
-
-	// TODO: Create a cronjob for this functionality
-
-	public function sync_converkit_data()
-	{
-
-		global $wpdb;
-		$api_key = "8xjZlAPwIpU62U7SQjjS-Q";
-
-		$user_id = '';
-		$data = array();
-
-		$users = get_transient('ck_users');
-		// delete_transient('cl_data');
-		// die();
-
-		$cache_seconds = 60 * 60 * 24;
-		// $limit = count($users);
-
-		foreach ($users as $key => $user) {
-
-			if ($key % 100 == 0 && $key > 0) {
-				sleep(60);
-				echo '90 API calls reached; waiting 60 seconds.';
-			}
-
-			$curl = curl_init();
-			$user_id = $user->id;
-
-			curl_setopt_array($curl, array(
-				CURLOPT_URL => "https://api.convertkit.com/v3/subscribers/${user_id}/tags?api_key=${api_key}",
-				CURLOPT_RETURNTRANSFER => true,
-				CURLOPT_ENCODING => "",
-				CURLOPT_MAXREDIRS => 10,
-				CURLOPT_TIMEOUT => 30,
-				CURLOPT_SSL_VERIFYHOST => 0,
-				CURLOPT_SSL_VERIFYPEER => 0,
-				CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
-				CURLOPT_CUSTOMREQUEST => "GET",
-				CURLOPT_HTTPHEADER => array(
-					"content-type: application/json",
-				),
-			));
-
-			$response = json_decode(curl_exec($curl)); // tags
-
-			$user = array(
-				'ck_id' => $user->id,
-				'first_name' => $user->first_name,
-				'email_address' => $user->email_address,
-				'state' => $user->state,
-				'created_at' => $user->created_at,
-				'fields' => $user->fields,
-				'tags' => $response->tags,
-			);
-
-			curl_close($curl);
-
-			array_push($data, $user);
-
-			$table_name = $wpdb->prefix . 'ck_data';
-			$existing_record = $wpdb->get_results("SELECT * FROM $table_name WHERE ck_id = '" . $user['ck_id'] . "'");
-			if (count($existing_record) === 0) {
-				$wpdb->insert(
-					$table_name,
-					array(
-						'ck_id' => $user['ck_id'],
-						'first_name' => $user['first_name'],
-						'email_address' => $user['email_address'],
-						'state' => $user['state'],
-						'created_at' => $user['created_at'],
-						'fields' => serialize($user['fields']),
-						'tags' => serialize($user['tags']),
-					)
-				);
-			}
-		}
-
-		set_transient('ck_data', $data, $cache_seconds);
-	}
-
-
-
-
-
-
-
-	public function get_converkit_all_users()
-	{
-
-		global $wpdb;
-
-		$data = get_transient('ck_data');
-
-		return $data;
-	}
-
-
-
-
 
 	public function get_converkit_users($request)
 	{
@@ -1557,8 +1474,8 @@ class Api extends WP_REST_Controller
 		$api_secret = "1cddU-Wg7MSePN3JYZqa3G4pGs13I9fQfs1aLsEINbg";
 
 		// Parameter variables
-		$current_page = $request["page"] ?? 1;
-		$from_date = $request["from_date"] ?? '2022-03-01'; // ex: 2020-02-28
+		// $current_page = $request["page"] ?? 1;
+		$from_date = $request["from_date"] ?? '2020-01-01';
 		$to_date = $request["to_date"] ?? date('Y-m-d');
 		$sort_order = $request['sort_order'] ?? 'desc';
 		$sort_field = $request['sort_field'] ?? '';
@@ -1572,15 +1489,16 @@ class Api extends WP_REST_Controller
 		// delete_transient('ck_users');
 		// die();
 
-		$total_pages = null;
+		echo count($tags_cache);
 
+		$total_pages = null;
 
 		if (empty($tags_cache)) {
 			while ($continue) {
 				$curl = curl_init();
 				$params = array();
 
-				$params['page'] = $current_page;
+				// $params['page'] = $current_page; disable pagination results temporarily
 				$params['from_date'] = $from_date;
 				$params['to_date'] = $to_date;
 				$params['sort_order'] = $sort_order;
@@ -1624,9 +1542,13 @@ class Api extends WP_REST_Controller
 				curl_close($curl);
 			}
 
+			echo 'Pulled data from CK API';
+
 			// $response = $tags;
 
 		} else {
+
+			echo 'Pulled data from WP transient';
 
 			$tags = $tags_cache;
 			$response = $tags;
@@ -1639,7 +1561,152 @@ class Api extends WP_REST_Controller
 		return $response;
 	}
 
+	public function get_converkit_all_users()
+	{
 
+		global $wpdb;
+
+		// We are writing data to a transient but also to a custom table to see which is more performant
+		// $data = get_transient('ck_data');
+
+		$table_name = $wpdb->prefix . 'ck_data';
+		$data = $wpdb->get_results("SELECT * FROM $table_name");
+
+		$data = json_decode(json_encode($data, true), true);
+
+		foreach ($data as $key => $item) {
+			$data[$key]['fields'] = unserialize($item['fields']);
+			$data[$key]['tags'] = unserialize($item['tags']);
+			$data[$key]['courses'] = unserialize($item['courses']);
+		}
+		
+		return $data;
+	}
+
+
+	/**
+	 * 
+	 * Get ConverKit Tags
+	 * 
+	 */
+
+
+	// TODO: Create a cronjob for this functionality
+
+	public function sync_converkit_data()
+	{
+
+		global $wpdb;
+		$api_key = "8xjZlAPwIpU62U7SQjjS-Q";
+
+		$user_id = '';
+		$data = array();
+
+		$users = get_transient('ck_users');
+		// delete_transient('cl_data');
+		// die();
+
+		$cache_seconds = 60 * 60 * 24;
+		// $limit = count($users);
+
+		if (!$users) return false;		
+
+		foreach ($users as $key => $user) {
+
+			if ($key % 120 == 0 && $key > 0) {
+				sleep(60);
+				echo '120 API calls reached; waiting 60 seconds.';
+			}
+
+			$curl = curl_init();
+			$user_id = $user->id;
+
+			curl_setopt_array($curl, array(
+				CURLOPT_URL => "https://api.convertkit.com/v3/subscribers/${user_id}/tags?api_key=${api_key}",
+				CURLOPT_RETURNTRANSFER => true,
+				CURLOPT_ENCODING => "",
+				CURLOPT_MAXREDIRS => 10,
+				CURLOPT_TIMEOUT => 30,
+				CURLOPT_SSL_VERIFYHOST => 0,
+				CURLOPT_SSL_VERIFYPEER => 0,
+				CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+				CURLOPT_CUSTOMREQUEST => "GET",
+				CURLOPT_HTTPHEADER => array(
+					"content-type: application/json",
+				),
+			));
+
+			$response = json_decode(curl_exec($curl)); // tags
+
+			curl_close($curl);
+
+			/* We may be able to extend this to pull by first/last name but it may be spotty since we don't always have first and last name
+			global $wpdb;
+			$users = $wpdb->get_results( "SELECT user_id FROM $wpdb->usermeta WHERE meta_key = 'first_name' AND meta_value = 'Rudrastyh'" );
+			if( $users ) {
+				foreach ( $users as $user ) {
+					echo '<p>' . $user->user_id . '</p>';
+				}
+			} else {
+				echo 'There are no users with the specified last name.';
+			}
+			*/
+
+			// WordPress - Get WordPress ID by email
+			$wp_userdata = get_user_by('email', $user->email_address);
+			// if ($wp_userdata === false) {
+			// 	$wp_userdata = get_user_by('name', $user->first_name);
+			// }
+
+			$courses = $wp_userdata ? learndash_user_get_enrolled_courses($wp_userdata->ID) : '';
+
+			$course_data = array();
+			if (is_array($courses)) {
+				foreach ($courses as $course_id) {
+					$course_data[] = array(
+						'course_id' => $course_id,
+						'course_title' => get_the_title($course_id)
+					);
+				}
+			} else {
+				$course_data = 'No Data';
+			}
+
+			$user = array(
+				'ck_id' => $user->id,
+				'wp_id' => $wp_userdata ? $wp_userdata->ID : '',
+				'first_name' => $user->first_name ? $user->first_name : '',
+				'email_address' => $user->email_address,
+				'state' => $user->state,
+				'created_at' => $user->created_at,
+				'fields' => $user->fields,
+				'tags' => $response->tags,
+				'courses' => $course_data,
+			);			
+
+			array_push($data, $user);
+
+			$table_name = $wpdb->prefix . 'ck_data';
+			$existing_record = $wpdb->get_results("SELECT * FROM $table_name WHERE ck_id = '" . $user['ck_id'] . "'");
+			if (count($existing_record) === 0) {
+				$wpdb->insert(
+					$table_name,
+					array(
+						'ck_id' => $user['ck_id'],
+						'first_name' => $user['first_name'],
+						'email_address' => $user['email_address'],
+						'state' => $user['state'],
+						'created_at' => $user['created_at'],
+						'fields' => serialize($user['fields']),
+						'tags' => serialize($user['tags']),
+						'courses' => serialize($user['courses'])
+					)
+				);
+			}
+		}
+
+		set_transient('ck_data', $data, $cache_seconds);
+	}
 
 	public function get_convertkit_tags()
 	{

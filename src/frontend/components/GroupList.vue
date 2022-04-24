@@ -571,7 +571,7 @@ export default {
   components: {
     Loading,
     moment,
-    VueApexCharts
+    VueApexCharts,
     // UserActivity,
     // UserDetails,
     // Lessons,
@@ -583,7 +583,7 @@ export default {
         foreColor: "fff",
         type: "radialBar",
         height: 300,
-        offsetX: 0
+        offsetX: 0,
       },
       // colors: ["#ff9800", "#4caf50", "#fff"],
       colors: ["#ff9800", "#4caf50"],
@@ -593,45 +593,45 @@ export default {
           hollow: {
             margin: 5,
             size: "48%",
-            background: "transparent"
+            background: "transparent",
           },
           dataLabels: {
             showOn: "always",
             name: {
               offsetY: -15,
               fontSize: "18px",
-              color: "#fff"
+              color: "#fff",
             },
             value: {
               offsetY: -0,
               fontSize: "30px",
               fontWeight: 700,
               show: true,
-              color: "#fff"
-            }
+              color: "#fff",
+            },
           },
           track: {
             show: true,
             background: "#fff",
             strokeWidth: "98%",
             opacity: 0.3,
-            margin: 3 // margin is in pixels
-          }
-        }
+            margin: 3, // margin is in pixels
+          },
+        },
       },
       labels: ["Courses", "Lessons"],
       stroke: {
-        lineCap: "round"
+        lineCap: "round",
       },
       legend: {
         show: true,
         position: "right",
         offsetX: -20,
         offsetY: 0,
-        formatter: function(val, opts) {
+        formatter: function (val, opts) {
           return val + " - " + opts.w.globals.series[opts.seriesIndex] + "%";
-        }
-      }
+        },
+      },
       // fill: {
       //   type: "gradient",
       //   gradient: {
@@ -666,42 +666,42 @@ export default {
       { text: "Group", value: "g.name" },
       { text: "Latest Activity", value: "latest_activity" },
       { text: "Lessons Complete", value: "lessons_completed" },
-      { text: "Last Login", value: "last_login" }
+      { text: "Last Login", value: "last_login" },
       // { text: "Zoom Stats", value: "zoom_stats" }
     ],
     courseActivity: [
       { text: "Course Activity", value: "activity_title" },
       { text: "Date Started", value: "activity_started" },
       { text: "Date Completed", value: "activity_completed" },
-      { text: "Duration", value: "activity_duration" }
+      { text: "Duration", value: "activity_duration" },
     ],
     lessonActivity: [
       { text: "Lesson Activity", value: "activity_title" },
       { text: "Related Course", value: "course_title" },
       { text: "Date Started", value: "activity_started" },
       { text: "Date Completed", value: "activity_completed" },
-      { text: "Duration", value: "activity_duration" }
+      { text: "Duration", value: "activity_duration" },
     ],
     topicActivity: [
       { text: "Topic Activity", value: "activity_title" },
       { text: "Related Course", value: "course_title" },
       { text: "Date Started", value: "activity_started" },
       { text: "Date Completed", value: "activity_completed" },
-      { text: "Duration", value: "activity_duration" }
+      { text: "Duration", value: "activity_duration" },
     ],
     quizActivity: [
       { text: "Quiz Activity", value: "activity_title" },
       { text: "Related Course", value: "course_title" },
       { text: "Date Started", value: "activity_started" },
       { text: "Date Completed", value: "activity_completed" },
-      { text: "Duration", value: "activity_duration" }
+      { text: "Duration", value: "activity_duration" },
     ],
     courseHeaders: [
       { text: "Course", value: "course_title" },
       { text: "Status", value: "course_status" },
       { text: "Progress", value: "course_progress" },
       { text: "Date Started", value: "date_started", type: "date" },
-      { text: "Date Completed", value: "date_completed", type: "date" }
+      { text: "Date Completed", value: "date_completed", type: "date" },
     ],
     quizHeaders: [
       { text: "Course / Quiz", value: "quiz_title" },
@@ -709,27 +709,27 @@ export default {
       { text: "Score", value: "score" },
       { text: "Duration", value: "timespent" },
       { text: "Date Started", value: "quiz_started", type: "date" },
-      { text: "Date Completed", value: "quiz_completed", type: "date" }
+      { text: "Date Completed", value: "quiz_completed", type: "date" },
     ],
     zoomHeaders: [
       { text: "Date", value: "date" },
       { text: "Joined", value: "join_date" },
       { text: "Parted", value: "leave_date" },
-      { text: "Duration", value: "duration" }
+      { text: "Duration", value: "duration" },
     ],
     sortByGroup: "name",
     sortDescGroup: false,
     sortByCourse: "course_title",
-    sortDescCourse: false
+    sortDescCourse: false,
   }),
   filters: {
-    duration: function(value) {
+    duration: function (value) {
       return value === null || value == 0
         ? "––"
         : moment.utc(value * 1000).format("HH:mm:ss");
       // return value;
     },
-    status: function(value) {
+    status: function (value) {
       if (value == "not-started") {
         return "Not Started";
       } else if (value == "in-progress") {
@@ -740,17 +740,17 @@ export default {
         return value;
       }
     },
-    upperCaseNames: function(name) {
+    upperCaseNames: function (name) {
       return name.charAt(0).toUpperCase() + name.slice(1);
     },
-    passed: function(value) {
+    passed: function (value) {
       if (value == 1) {
         return "Passed";
       } else {
         return "Not Passed";
       }
     },
-    fancyTimeFormat: function(duration) {
+    fancyTimeFormat: function (duration) {
       let hrs = ~~(duration / 3600);
       let mins = ~~((duration % 3600) / 60);
       let secs = ~~duration % 60;
@@ -763,7 +763,7 @@ export default {
       ret += "" + mins + ":" + (secs < 10 ? "0" : "");
       ret += "" + secs;
       return ret;
-    }
+    },
   },
   computed: {
     selectedGroups() {
@@ -774,7 +774,7 @@ export default {
     //   return this.$store.state.multipleGroupUsers;
     // },
 
-    randomData: function() {
+    randomData: function () {
       return Math.floor(Math.random() * 40 + 40);
     },
     // filteredData: function() {
@@ -792,25 +792,25 @@ export default {
     // },
 
     ...mapGetters({
-      userDetails: "userDetails"
+      userDetails: "userDetails",
     }),
     ...mapGetters({
-      filteredQuizzes: "filteredQuizzes"
+      filteredQuizzes: "filteredQuizzes",
     }),
     ...mapGetters({
-      filteredCourses: "filteredCourses"
+      filteredCourses: "filteredCourses",
     }),
     ...mapGetters({
-      multipleGroupUsers: "multipleGroupUsers"
-    }),
-
-    ...mapGetters({
-      uniqueUsers: "uniqueUsers"
+      multipleGroupUsers: "multipleGroupUsers",
     }),
 
     ...mapGetters({
-      userActivity: "userActivity"
-    })
+      uniqueUsers: "uniqueUsers",
+    }),
+
+    ...mapGetters({
+      userActivity: "userActivity",
+    }),
 
     // ...mapGetters(["userCoursesById"]),
     // userCourses() {
@@ -970,16 +970,18 @@ export default {
           "ldd/v2/meetings/meeting-history/?email=" + email
         );
 
+        console.log("Zoom Data: ", res);
+
         this.participations = [
-          ...res.data.map(participation => ({
+          ...res.data.map((participation) => ({
             join_date: new Date(participation.join_time).toLocaleString(),
             leave_date: new Date(participation.leave_time).toLocaleString(),
             duration: `${Math.floor(participation.duration / 60)} mins`,
-            date: new Date(participation.join_time).toDateString()
-          }))
+            date: new Date(participation.join_time).toDateString(),
+          })),
         ];
 
-        console.log(res.data);
+        console.log("Participation: ", this.participations);
 
         this.zoomModal = true;
       } catch (e) {
@@ -993,7 +995,7 @@ export default {
       this.$store.commit("SET_MESSAGE", msg);
     },
 
-    selectUser: function(userId) {
+    selectUser: function (userId) {
       this.userId = userId;
       // Bus.$emit("selectUser", userId);
       // this.getUserCoursesById(userId);
@@ -1003,7 +1005,7 @@ export default {
       this.getUserDetails(userId);
       this.$store.dispatch("getUserId", userId);
       this.$store.dispatch("getUserActivity");
-    }
+    },
     // prepareData(updatedCourses) {
     //   for (const course of updatedCourses.entries()) {
     //     console.log(course)
@@ -1012,20 +1014,20 @@ export default {
     // }
   },
   created() {
-    Bus.$on("selectGroup", selectedGroup => {
+    Bus.$on("selectGroup", (selectedGroup) => {
       this.groupId = selectedGroup;
       this.getGroupUsers(selectedGroup);
     });
 
     this.getSubscriber();
-    this.getSubscribersAll();
+    // this.getSubscribersAll();
   },
   watch: {
     // userCourses: function(updatedCourses) {
     //   console.log('userCourses Changed:', updatedCourses)
     //   this.prepareData(updatedCourses);
     // }
-  }
+  },
 };
 </script>
 
